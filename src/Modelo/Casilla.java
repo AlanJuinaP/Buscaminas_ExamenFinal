@@ -1,3 +1,4 @@
+package Modelo;
 public class Casilla {
     private boolean tieneMina;
     private boolean descubierta;
