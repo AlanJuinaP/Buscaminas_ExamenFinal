@@ -1,8 +1,10 @@
-import controlador.*;
+
+import controlador.ControladorJuego;
 
 public class Buscaminas {
+
     public static void main(String[] args) {
-        Controlador_Juego controlador = new Controlador_Juego();
-        controlador.ejecutarJuego();
+        ControladorJuego controlador = new ControladorJuego();
+        controlador.iniciarJuego();
     }
 }

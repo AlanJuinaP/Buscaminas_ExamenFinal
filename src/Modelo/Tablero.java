@@ -1,94 +1,70 @@
-package Modelo;
+package modelo;
+
 import java.util.Random;
 
 public class Tablero {
-    private Casilla[][] casillas;
-    private int filas = 10;
-    private int columnas = 10;
-    private int minas;
+    private final int TAMANIO = 10;
+    private final int MINAS = 10;
+    private Celda[][] celdas;
 
-    public Tablero(int minas) {
-        this.minas = minas;
-        casillas = new Casilla[filas][columnas];
+    public Tablero() {
+        celdas = new Celda[TAMANIO][TAMANIO];
         inicializarTablero();
-        colocarMinas();
-        calcularMinasAdyacentes();
     }
 
     private void inicializarTablero() {
-        for (int i = 0; i < filas; i++) {
-            for (int j = 0; j < columnas; j++) {
-                casillas[i][j] = new Casilla();
+        for (int i = 0; i < TAMANIO; i++) {
+            for (int j = 0; j < TAMANIO; j++) {
+                celdas[i][j] = new Celda();
             }
         }
+        colocarMinas();
+        calcularMinasAdyacentes();
     }
 
     private void colocarMinas() {
         Random rand = new Random();
         int minasColocadas = 0;
-        while (minasColocadas < minas) {
-            int fila = rand.nextInt(filas);
-            int columna = rand.nextInt(columnas);
-            if (!casillas[fila][columna].tieneMina()) {
-                casillas[fila][columna].colocarMina();
+
+        while (minasColocadas < MINAS) {
+            int fila = rand.nextInt(TAMANIO);
+            int columna = rand.nextInt(TAMANIO);
+            if (!celdas[fila][columna].tieneMina()) {
+                celdas[fila][columna].colocarMina(true);
                 minasColocadas++;
             }
         }
     }
 
     private void calcularMinasAdyacentes() {
-        for (int i = 0; i < filas; i++) {
-            for (int j = 0; j < columnas; j++) {
-                if (!casillas[i][j].tieneMina()) {
-                    int minasAlrededor = contarMinasAdyacentes(i, j);
-                    casillas[i][j].setMinasAdyacentes(minasAlrededor);
+        for (int i = 0; i < TAMANIO; i++) {
+            for (int j = 0; j < TAMANIO; j++) {
+                if (!celdas[i][j].tieneMina()) {
+                    celdas[i][j].establecerMinasAdyacentes(contarMinasAdyacentes(i, j));
                 }
             }
         }
     }
 
     private int contarMinasAdyacentes(int fila, int columna) {
-        int minasAlrededor = 0;
+        int conteo = 0;
         for (int i = -1; i <= 1; i++) {
             for (int j = -1; j <= 1; j++) {
-                int nuevaFila = fila + i;
-                int nuevaColumna = columna + j;
-                if (nuevaFila >= 0 && nuevaFila < filas && nuevaColumna >= 0 && nuevaColumna < columnas) {
-                    if (casillas[nuevaFila][nuevaColumna].tieneMina()) {
-                        minasAlrededor++;
-                    }
+                int f = fila + i;
+                int c = columna + j;
+                if (f >= 0 && f < TAMANIO && c >= 0 && c < TAMANIO && celdas[f][c].tieneMina()) {
+                    conteo++;
                 }
             }
         }
-        return minasAlrededor;
+        return conteo;
     }
 
-    public Casilla obtenerCasilla(int fila, int columna) {
-        return casillas[fila][columna];
+    public Celda[][] obtenerCeldas() {
+        return celdas;
     }
 
-    public void revelarCasillasVacias(int fila, int columna) {
-        if (fila < 0 || fila >= filas || columna < 0 || columna >= columnas) return;
-        Casilla casilla = casillas[fila][columna];
-        if (casilla.estaDescubierta() || casilla.estaMarcada()) return;
-
-        casilla.descubrir();
-        if (casilla.obtenerMinasAdyacentes() == 0) {
-            for (int i = -1; i <= 1; i++) {
-                for (int j = -1; j <= 1; j++) {
-                    if (i != 0 || j != 0) {
-                        revelarCasillasVacias(fila + i, columna + j);
-                    }
-                }
-            }
-        }
-    }
-
-    public int obtenerFilas() {
-        return filas;
-    }
-
-    public int obtenerColumnas() {
-        return columnas;
+    public int obtenerTamanio() {
+        return TAMANIO;
     }
 }
